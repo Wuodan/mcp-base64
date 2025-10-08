@@ -103,9 +103,10 @@ function fmtJSON(text) {
   try { return JSON.stringify(JSON.parse(text), null, 2); } catch { return text; }
 }
 
-async function fetchJSON(endpoint, init) {
+async function fetchJSON(endpoint, init, customBase) {
   try {
-    const res = await fetch(BASE + endpoint, init);
+    const base = customBase || BASE;
+    const res = await fetch(base + endpoint, init);
     const text = await res.text();
     output().innerHTML = `<h3>${endpoint}</h3><pre>${fmtJSON(text)}</pre>`;
   } catch (e) {
@@ -129,10 +130,10 @@ $('applyBase').addEventListener('click', () => {
   output().innerHTML = `<pre>Base set to ${BASE}</pre>`;
 });
 
-$('testConn').addEventListener('click', () => fetchJSON('/api/version'));
-
-// ---------- system methods ----------
-// Buttons call fetchJSON directly
+$('testConn').addEventListener('click', () => {
+  const val = $('baseUrl').value.trim() || BASE;
+  fetchJSON('/api/version', undefined, val);
+});
 
 // ---------- model admin ----------
 async function showModel() {
@@ -144,15 +145,14 @@ async function showModel() {
 async function pullModel() {
   const name = $('pullName').value.trim();
   if (!name) return alert('Enter model to pull');
-  // Pull can be large/long-running; confirm
-  if (!confirm(`Pull model "${name}" from registry?`)) return;
+  if (!confirm(`Pull model \"${name}\" from registry?`)) return;
   await fetchJSONBody('/api/pull', { name, stream: false });
 }
 
 async function confirmAndPush() {
   const name = $('pushName').value.trim();
   if (!name) return alert('Enter model to push');
-  if (!confirm(`Push model "${name}" to registry?`)) return;
+  if (!confirm(`Push model \"${name}\" to registry?`)) return;
   await fetchJSONBody('/api/push', { name, stream: false });
 }
 
@@ -160,23 +160,21 @@ async function confirmAndCopy() {
   const src = $('copySrc').value.trim();
   const dst = $('copyDst').value.trim();
   if (!src || !dst) return alert('Enter both source and destination');
-  if (!confirm(`Copy model "${src}" to "${dst}"?`)) return;
+  if (!confirm(`Copy model \"${src}\" to \"${dst}\"?`)) return;
   await fetchJSONBody('/api/copy', { source: src, destination: dst });
 }
 
 async function confirmAndDelete() {
   const model = $('modelName').value.trim();
   if (!model) return alert('Enter model');
-  // Confirmation defaults to Cancel/No behaviorally if user dismisses.
-  if (!confirm(`DELETE model from disk: "${model}"? This cannot be undone.`)) return;
+  if (!confirm(`DELETE model from disk: \"${model}\"? This cannot be undone.`)) return;
   await fetchJSONBody('/api/delete', { name: model });
 }
 
-// ---------- RAM unload ----------
 async function confirmAndUnload() {
   const model = $('unloadModel').value.trim();
   if (!model) return alert('Enter model to unload');
-  if (!confirm(`Request unload from RAM for "${model}"?`)) return;
+  if (!confirm(`Request unload from RAM for \"${model}\"?`)) return;
   await fetchJSONBody('/api/generate', { model, keep_alive: 0, prompt: '' });
 }
 
