@@ -2,12 +2,22 @@
 
 ---
 
+## Clarification & Planning Phase
+Before implementation, if any part of this task is **unclear or under-specified**, ask up to **3 concise clarification questions**.
+Keep them factual (no speculation) and grouped into one short list.
+Once assumptions are clarified or documented, proceed autonomously without further questions
+unless something makes execution **impossible**.
+
+---
+
 ## SDK Choice
 Use **either**:
 - **FastMCP** (Python package often named `mcp` or `fastmcp`), **or**
 - The **official Python MCP SDK** (`mcp` / `mcp-python`).
 
 **Requirement:** stdio transport. Pick the SDK you implement fastest. Keep parameter descriptions visible in Cline.
+
+---
 
 ## Golden Rules (keep it fast & correct)
 1. Build a **real MCP server with stdio transport**, not two loose scripts.
@@ -17,12 +27,16 @@ Use **either**:
 5. **Do not invent APIs**. If something is unknown, stub and add a short TODO in README.
 6. Keep stdio clean for MCP JSON-RPC (no noisy prints).
 
+---
+
 ## Project Layout (strict)
 - `pyproject.toml` (build system + deps)
 - `src/mcp_base64/server.py` (stdio runner + tools)
 - `tests/test_tools.py` (pytest + pytest-asyncio; binary & text cases)
 - `README.md` (install, run via stdio, tools table, usage examples)
 - `.github/workflows/ci.yml` (lint + test)
+
+---
 
 ## Tools (exact signatures & behavior)
 Implement exactly these two tools with type hints **and parameter descriptions** so Cline shows proper help:
@@ -32,12 +46,12 @@ Implement exactly these two tools with type hints **and parameter descriptions**
 **Requirements**
 - Use `pathlib.Path` and **absolute paths only** (validate input; reject traversal).
 - Read/write **binary** for arbitrary files.
-- On errors, use the SDK’s idiomatic tool error:
+- On errors, use the SDK's idiomatic tool error:
   - FastMCP: raise `ToolError("message")`.
   - Official SDK: return an MCP **error response** with a concise message (custom exception mapped to error is fine).
 - **Parameter descriptions** (so Cline shows them):
   - **If using FastMCP**: add `pydantic.Field(description=...)` to each parameter.
-  - **If using official SDK**: use whatever the SDK supports (e.g., decorator/schema args or pydantic models) to set each parameter’s **description**.
+  - **If using official SDK**: use whatever the SDK supports (e.g., decorator/schema args or pydantic models) to set each parameter's **description**.
   - Also include short docstrings (NumPy-style) as a fallback.
 
 **Example (FastMCP style)**
@@ -69,20 +83,30 @@ async def encode_file_to_base64(args: EncodeArgs) -> str:
     # implement…
 ```
 
+---
+
 ## Coding Conventions
 - Python >= 3.10, type hints, small pure functions.
 - Use `ruff` or `flake8`; concise docstrings.
 - No global mutable state.
 
+---
+
 ## Speed Heuristics
 - Scaffold → compile → implement `encode` → quick test → implement `decode` → extend tests.
 - Defer extras (Docker, PyPI) until core tests pass.
 
+---
+
 ## README (concise)
 Include: install steps, how to run via **stdio**, tools table, minimal JSON-RPC example, short FAQ/TODO. When writing long Markdown, commit it to the repo (the user prefers downloadable files).
 
+---
+
 ## CI
 - GitHub Actions: set Python 3.11, install deps, run `ruff`/`flake8` and `pytest -q` on push/PR.
+
+---
 
 ## Acceptance Tests (must pass locally)
 1. **Initialize over stdio** (run from project root with editable path):
@@ -94,6 +118,8 @@ Include: install steps, how to run via **stdio**, tools table, minimal JSON-RPC 
    Expected: a valid MCP `initialize` response.
 2. **Round-trip**: encoding a small binary (e.g., 1KB PNG) with `encode_file_to_base64` and decoding with `decode_base64_to_file` reproduces identical bytes (assert in tests).
 
+---
+
 ## Concrete Deliverables
 1. `pyproject.toml` with deps: `pydantic`, `pytest`, `pytest-asyncio`, `ruff` or `flake8`, and one MCP SDK (**FastMCP or official mcp-python**).
 2. `src/mcp_base64/server.py` with:
@@ -103,6 +129,8 @@ Include: install steps, how to run via **stdio**, tools table, minimal JSON-RPC 
 3. `tests/test_tools.py` covering text & binary files using temp dirs.
 4. `README.md` (short, with exact run commands and examples).
 5. `.github/workflows/ci.yml` to lint and test.
+
+---
 
 ## Run Commands (examples)
 - **Local run (stdio)**:
@@ -120,6 +148,9 @@ Include: install steps, how to run via **stdio**, tools table, minimal JSON-RPC 
   pytest -q
   ```
 
+---
+
 ## Notes
 - Keep answers short and code-first. Provide minimal commands to run and test.
-- If something is ambiguous, proceed with the safest reasonable default and document the assumption in README.
+- If something is ambiguous, use the Clarification Phase at the start; once resolved, proceed autonomously.
+- Document any assumptions briefly in README.
