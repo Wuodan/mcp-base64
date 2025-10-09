@@ -94,6 +94,7 @@ You **must run**, **capture stdout+stderr**, **parse** for problems, and **fix**
    - Tear down cleanly.
 
 ### Capture & parse
+- All integration tests **must** be wrapped with a reasonable timeout (e.g., `timeout 15`) to prevent infinite loops or hanging servers.
 - Save outputs to:
   - `artifacts/lint.log`
   - `artifacts/unit-test.log`
