@@ -15,6 +15,10 @@ from pathlib import Path
 import pytest
 from fastmcp.exceptions import ToolError
 
+from mcp_base64.server import validate_absolute_path
+from mcp_base64.server import read_file_binary
+from mcp_base64.server import write_file_binary
+
 
 @pytest.fixture
 def sample_text_content() -> str:
@@ -69,28 +73,24 @@ class TestPathValidation:
 
     def test_validate_absolute_path_valid(self, temp_text_file: Path):
         """Test that valid absolute paths are accepted."""
-        from mcp_base64.server import validate_absolute_path
 
         result = validate_absolute_path(str(temp_text_file))
         assert result == temp_text_file.resolve()
 
     def test_validate_absolute_path_relative(self):
         """Test that relative paths are rejected."""
-        from mcp_base64.server import validate_absolute_path
 
         with pytest.raises(ToolError, match="Path must be absolute"):
             validate_absolute_path("relative/path/file.txt")
 
     def test_validate_absolute_path_empty(self):
         """Test that empty paths are rejected."""
-        from mcp_base64.server import validate_absolute_path
 
         with pytest.raises(ToolError, match="File path cannot be empty"):
             validate_absolute_path("")
 
     def test_validate_absolute_path_with_dots(self, temp_dir: Path):
         """Test that paths with .. are properly resolved and validated."""
-        from mcp_base64.server import validate_absolute_path
 
         # Create a test file in temp directory
         test_file = temp_dir / "test.txt"
@@ -106,30 +106,30 @@ class TestPathValidation:
 class TestFileOperations:
     """Test file I/O operations."""
 
-    def test_read_file_binary_text(self, temp_text_file: Path, sample_text_content: str):
+    def test_read_file_binary_text(
+        self, temp_text_file: Path, sample_text_content: str
+    ):
         """Test reading text file in binary mode."""
-        from mcp_base64.server import read_file_binary
 
         content = read_file_binary(temp_text_file)
         assert content == sample_text_content.encode("utf-8")
 
-    def test_read_file_binary_binary(self, temp_binary_file: Path, sample_binary_content: bytes):
+    def test_read_file_binary_binary(
+        self, temp_binary_file: Path, sample_binary_content: bytes
+    ):
         """Test reading binary file."""
-        from mcp_base64.server import read_file_binary
 
         content = read_file_binary(temp_binary_file)
         assert content == sample_binary_content
 
     def test_read_file_binary_not_found(self):
         """Test reading non-existent file."""
-        from mcp_base64.server import read_file_binary
 
         with pytest.raises(ToolError, match="File not found"):
             read_file_binary(Path("/non/existent/file.txt"))
 
     def test_write_file_binary(self, temp_dir: Path, sample_binary_content: bytes):
         """Test writing binary content to file."""
-        from mcp_base64.server import write_file_binary
 
         output_file = temp_dir / "output.bin"
         write_file_binary(output_file, sample_binary_content)
@@ -151,7 +151,9 @@ class TestEncodeFileToBase64:
         decoded = base64.b64decode(result, validate=True)
         assert decoded == sample_text_content.encode("utf-8")
 
-    def test_encode_binary_file(self, temp_binary_file: Path, sample_binary_content: bytes):
+    def test_encode_binary_file(
+        self, temp_binary_file: Path, sample_binary_content: bytes
+    ):
         """Test encoding a binary file."""
         from mcp_base64.server import _encode_file_to_base64_impl
 
@@ -186,16 +188,20 @@ class TestEncodeFileToBase64:
 class TestDecodeBase64ToFile:
     """Test the decode_base64_to_file tool."""
 
-    def test_decode_valid_base64_text(self, temp_dir: Path, sample_text_content: str):
+    def test_decode_valid_base64_text(
+        self, temp_dir: Path, sample_text_content: str
+    ):
         """Test decoding valid base64 text content."""
         from mcp_base64.server import _decode_base64_to_file_impl
 
         # Encode content to base64
-        base64_content = base64.b64encode(sample_text_content.encode("utf-8")).decode("ascii")
+        b64_content = base64.b64encode(
+            sample_text_content.encode("utf-8")
+        ).decode("ascii")
 
         # Decode back to file
         output_file = temp_dir / "decoded.txt"
-        result = _decode_base64_to_file_impl(base64_content, str(output_file))
+        result = _decode_base64_to_file_impl(b64_content, str(output_file))
 
         # Verify result message
         assert "Successfully decoded base64 content to file:" in result
@@ -205,16 +211,18 @@ class TestDecodeBase64ToFile:
         assert output_file.exists()
         assert output_file.read_text() == sample_text_content
 
-    def test_decode_valid_base64_binary(self, temp_dir: Path, sample_binary_content: bytes):
+    def test_decode_valid_base64_binary(
+        self, temp_dir: Path, sample_binary_content: bytes
+    ):
         """Test decoding valid base64 binary content."""
         from mcp_base64.server import _decode_base64_to_file_impl
 
         # Encode content to base64
-        base64_content = base64.b64encode(sample_binary_content).decode("ascii")
+        b64_content = base64.b64encode(sample_binary_content).decode("ascii")
 
         # Decode back to file
         output_file = temp_dir / "decoded.bin"
-        result = _decode_base64_to_file_impl(base64_content, str(output_file))
+        result = _decode_base64_to_file_impl(b64_content, str(output_file))
 
         # Verify result message
         assert "Successfully decoded base64 content to file:" in result
@@ -244,10 +252,10 @@ class TestDecodeBase64ToFile:
         """Test that relative paths are rejected for output file."""
         from mcp_base64.server import _decode_base64_to_file_impl
 
-        base64_content = base64.b64encode(sample_text_content.encode("utf-8")).decode("ascii")
+        b64_content = base64.b64encode(sample_text_content.encode("utf-8")).decode("ascii")
 
         with pytest.raises(ToolError, match="Path must be absolute"):
-            _decode_base64_to_file_impl(base64_content, "relative/path/output.txt")
+            _decode_base64_to_file_impl(b64_content, "relative/path/output.txt")
 
     def test_decode_creates_parent_dirs(self, sample_text_content: str):
         """Test that parent directories are created if they don't exist."""
@@ -258,8 +266,8 @@ class TestDecodeBase64ToFile:
             temp_path = Path(temp_dir)
             nested_file = temp_path / "level1" / "level2" / "level3" / "output.txt"
 
-            base64_content = base64.b64encode(sample_text_content.encode("utf-8")).decode("ascii")
-            result = _decode_base64_to_file_impl(base64_content, str(nested_file))
+            b64_content = base64.b64encode(sample_text_content.encode("utf-8")).decode("ascii")
+            _decode_base64_to_file_impl(b64_content, str(nested_file))
 
             # Verify file was created in nested directory
             assert nested_file.exists()
