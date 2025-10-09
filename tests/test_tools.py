@@ -15,9 +15,11 @@ from pathlib import Path
 import pytest
 from fastmcp.exceptions import ToolError
 
-from mcp_base64.server import validate_absolute_path
-from mcp_base64.server import read_file_binary
-from mcp_base64.server import write_file_binary
+from mcp_base64.server import (
+    read_file_binary,
+    validate_absolute_path,
+    write_file_binary,
+)
 
 
 @pytest.fixture
