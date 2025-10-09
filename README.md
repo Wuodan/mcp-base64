@@ -6,40 +6,32 @@ A Python MCP (Model Context Protocol) server for Base64 file conversion with std
 
 - **encode_file_to_base64**: Encode any file to base64 string
 - **decode_base64_to_file**: Decode base64 content to file
-- Security-focused: Only accepts absolute paths, validates against path traversal
 - Binary-safe: Handles both text and binary files correctly
-
-## Installation
-
-```bash
-python3 -m venv .venv
-./.venv/bin/python -m pip install --upgrade pip
-./.venv/bin/python -m pip install -e .
-```
 
 ## Usage
 
-### Direct Execution
-
-Run the MCP server:
-
-```bash
-PYTHONPATH=src ./.venv/bin/python -m mcp_base64.server
-```
-
 ### IDE Configuration
-
 For IDE plugins, add this server to your MCP configuration JSON:
-
 ```json
 {
   "mcpServers": {
-    "mcp-base64": {
-      "command": "<PATH-TO-PROJECT/.venv/bin/python",
-      "args": ["-m", "mcp_base64.server"]
+    "ollama": {
+      "command": "uvx",
+      "args": [
+        "mcp-ollama"
+      ]
     }
   }
 }
+```
+
+### Direct Execution
+```bash
+git clone https://github.com/Wuodan/mcp-base64.git
+cd mcp-base64
+python3 -m venv .venv
+./.venv/bin/python -m pip install -e .
+./.venv/bin/python -m mcp_base64.server
 ```
 
 ## Tools
@@ -80,7 +72,3 @@ Run linting:
 ```bash
 ./.venv/bin/python -m ruff check .
 ```
-
-## License
-
-See LICENSE file for details.
