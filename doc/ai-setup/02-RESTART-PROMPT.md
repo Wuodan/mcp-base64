@@ -9,7 +9,7 @@ from the previous development session.
 Follow these steps:
 1. Read and internalize ./RESTART.md fully.
 2. If you need clarification of rules or structure, refer (read-only) to:
-   ./docs/CLINE_TASK_CURRENT.md
+   ./doc/CLINE_TASK_CURRENT.md
 3. Then continue execution starting from the section **"Open TODOs / Next Steps"**
    in RESTART.md.
 4. Before running or changing anything, verify that the environment and paths
