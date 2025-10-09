@@ -61,12 +61,17 @@ Short bullet points, ≤ 250 lines:
 ---
 
 ## Tools (exact signatures & behavior)
+Implement these two tools:
+
 - `encode_file_to_base64(file_path: str) -> str`
 - `decode_base64_to_file(base64_content: str, file_path: str) -> str`
-Requirements:
-- Use `pathlib.Path`; **absolute paths only** (validate; reject traversal)
-- Binary I/O; concise errors (FastMCP: `ToolError(…)`; official SDK: proper MCP error)
-- Parameter **descriptions** visible to Cline (Pydantic Field or SDK schema); brief docstrings
+
+Each tool must:
+- Use `pathlib.Path` and require **absolute paths only** (validate; reject traversal).
+- Use binary I/O for reading/writing files.
+- Raise concise, structured errors (`ToolError(...)` in FastMCP or proper MCP error objects in the official SDK).
+- Define parameter descriptions using **Pydantic `Field` metadata** so that Cline and other IDEs can display them in the MCP UI (docstrings alone are not shown).
+- Include brief docstrings summarizing the behavior.
 
 ---
 
