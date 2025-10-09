@@ -19,10 +19,27 @@ python3 -m venv .venv
 
 ## Usage
 
+### Direct Execution
+
 Run the MCP server:
 
 ```bash
 PYTHONPATH=src ./.venv/bin/python -m mcp_base64.server
+```
+
+### IDE Configuration
+
+For IDE plugins, add this server to your MCP configuration JSON:
+
+```json
+{
+  "mcpServers": {
+    "mcp-base64": {
+      "command": "<PATH-TO-PROJECT/.venv/bin/python",
+      "args": ["-m", "mcp_base64.server"]
+    }
+  }
+}
 ```
 
 ## Tools
