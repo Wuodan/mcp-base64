@@ -168,7 +168,17 @@ async function confirmAndDelete() {
   const model = $('modelName').value.trim();
   if (!model) return alert('Enter model');
   if (!confirm(`DELETE model from disk: \"${model}\"? This cannot be undone.`)) return;
-  await fetchJSONBody('/api/delete', { name: model });
+  try {
+    const res = await fetch(BASE + '/api/delete', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model })
+    });
+    const text = await res.text();
+    output().innerHTML = `<h3>DELETE /api/delete</h3><pre>${fmtJSON(text)}</pre>`;
+  } catch (e) {
+    output().innerHTML = `<h3>Error</h3><pre>${e}</pre>`;
+  }
 }
 
 async function confirmAndUnload() {
