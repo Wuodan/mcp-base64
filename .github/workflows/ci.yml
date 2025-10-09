@@ -57,7 +57,7 @@ jobs:
           python-version-file: "pyproject.toml"
 
       - name: Install the project
-        run: uv sync
+        run: uv sync --all-extras
 
       - name: Build package
         run: uv run hatch build
