@@ -1,7 +1,9 @@
 LICENSE
+README.md
 pyproject.toml
 src/mcp_base64/__init__.py
 src/mcp_base64/server.py
+src/mcp_base64/utils.py
 src/mcp_base64.egg-info/PKG-INFO
 src/mcp_base64.egg-info/SOURCES.txt
 src/mcp_base64.egg-info/dependency_links.txt

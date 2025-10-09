@@ -58,6 +58,27 @@ To decode:
 }
 ```
 
+## IDE Configuration
+
+To use this MCP server in Cline or another IDE, add the following to your MCP settings JSON (e.g., `~/.cline/data/settings/cline_mcp_settings.json`):
+
+```json
+{
+  "mcpServers": {
+    "mcp-base64": {
+      "type": "stdio",
+      "command": "/path/to/.venv/bin/python",
+      "args": ["-m", "mcp_base64.server"],
+      "env": {
+        "PYTHONPATH": "/path/to/src"
+      }
+    }
+  }
+}
+```
+
+Replace `/path/to/` with the actual path to the project directory.
+
 ## FAQ/TODO
 
 - Only absolute paths allowed
