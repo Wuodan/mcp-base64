@@ -1,0 +1,11 @@
+Metadata-Version: 2.4
+Name: mcp-base64
+Version: 0.1.0
+Summary: MCP server for Base64 file conversion
+Requires-Python: >=3.10
+License-File: LICENSE
+Requires-Dist: fastmcp
+Requires-Dist: ruff>=0.1.0
+Requires-Dist: pytest>=7.0.0
+Requires-Dist: pytest-asyncio>=0.21.0
+Dynamic: license-file
