@@ -23,6 +23,8 @@ jobs:
 
     - name: Install dependencies
       run: |
+        python3 -m venv .venv
+        source .venv/bin/activate
         python -m pip install --upgrade pip
         python -m pip install -e .[dev]
 
@@ -57,7 +59,7 @@ jobs:
           python-version-file: "pyproject.toml"
 
       - name: Install the project
-        run: uv sync --all-extras --dev
+        run: uv sync
 
       - name: Build package
         run: uv run hatch build
