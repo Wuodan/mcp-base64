@@ -33,7 +33,7 @@ jobs:
 
     - name: Integration test
       run: |
-        timeout 15 bash -c 'printf "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2024-11-05\",\"capabilities\":{},\"clientInfo\":{\"name\":\"test-client\",\"version\":\"1.0.0\"}}}\n" | PYTHONPATH=src python -m mcp_base64.server' | grep -q "jsonrpc"
+        timeout 15 bash -c 'printf "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2024-11-05\",\"capabilities\":{},\"clientInfo\":{\"name\":\"test-client\",\"version\":\"1.0.0\"}}}\n" | ./.venv/bin/python -m mcp_base64.server' | grep -q "jsonrpc"
 
   publish:
     name: Publish to PyPI
