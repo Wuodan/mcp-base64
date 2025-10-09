@@ -249,6 +249,9 @@ def decode_base64_to_file(
     return _decode_base64_to_file_impl(base64_content, file_path)
 
 
-if __name__ == "__main__":
+def main():
     # Run the MCP server with stdio transport
     mcp.run()
+
+if __name__ == "__main__":
+    main()
