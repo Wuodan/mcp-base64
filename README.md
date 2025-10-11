@@ -2,28 +2,34 @@
 
 Python MCP stdio server that provides tools to encode files to Base64 and decode Base64 payloads back to disk.
 
-## Installation
+## Installation on Your PC
 
 ```bash
+git clone https://github.com/factory/mcp-base64.git
+cd mcp-base64
 python3 -m venv .venv
 ./.venv/bin/python -m pip install --upgrade pip
 ./.venv/bin/python -m pip install -e .[dev]
 ```
 
-## Running the Server
+Record the absolute path to the virtual environment’s Python interpreter (for example `/path/to/mcp-base64/.venv/bin/python`). The IDE plugin will call this interpreter in stdio mode.
 
-```bash
-PYTHONPATH=src ./.venv/bin/python -m mcp_base64.server
+## IDE Plugin Configuration
+
+Most MCP-enabled IDE plugins accept a JSON configuration that specifies the stdio command. Adapt the template below to your environment. Replace the paths with the absolute locations on your machine.
+
+```json
+{
+  "name": "Base64 Converter",
+  "command": "/path/to/mcp-base64/.venv/bin/python",
+  "args": ["-m", "mcp_base64.server"],
+  "metadata": {
+    "description": "Encode and decode files with Base64"
+  }
+}
 ```
 
-### JSON-RPC Example
-
-```bash
-printf '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"cli","version":"0.0.0"}}}\n' | \
-PYTHONPATH=src ./.venv/bin/python -m mcp_base64.server
-printf '{"jsonrpc":"2.0","method":"notifications/initialized","params":{}}\n' | \
-PYTHONPATH=src ./.venv/bin/python -m mcp_base64.server
-```
+No additional environment variables are required when installed in editable mode.
 
 ## Tools
 
