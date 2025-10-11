@@ -10,6 +10,9 @@ review:
       - "droid-skip"
     excluded_base_branches:
       - "example_branch"
+  path_filters:
+    - "!./doc/ai-setup*"
+    - "!doc/ai-setup"
   guidelines:
     # ---------- Python ----------
     - path: "*.py"
