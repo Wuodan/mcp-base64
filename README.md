@@ -15,10 +15,10 @@ For IDE plugins, add this server to your MCP configuration JSON:
 ```json
 {
   "mcpServers": {
-    "ollama": {
+    "base64": {
       "command": "uvx",
       "args": [
-        "mcp-ollama"
+        "mcp-base64"
       ]
     }
   }
