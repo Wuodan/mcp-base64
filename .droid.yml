@@ -1,0 +1,48 @@
+review:
+  auto_review:
+    enabled: true
+    draft: false
+    bot: false
+    ignore_title_keywords:
+      - "WIP"
+      - "DO NOT MERGE"
+    ignore_labels:
+      - "droid-skip"
+    excluded_base_branches:
+      - "example_branch"
+  guidelines:
+    # ---------- Python ----------
+    - path: "*.py"
+      guideline: "Run `ruff check --quiet` with the project config; reject any changes until there are 0 errors/warnings."
+    - path: "*.py"
+      guideline: "Format Python with `ruff format` (PEP 8/Black-equivalent)."
+    - path: "*.py"
+      guideline: "Prefer simple loops over deeply nested or multi-line list comprehensions. Do not use multi-line nested list comprehensions."
+    - path: "*.py"
+      guideline: "Ensure file I/O is wrapped in try/except with actionable error messages; avoid bare `except`."
+    - path: "*.py"
+      guideline: "Validate untrusted inputs at the boundary (web handlers, CLI args, DB calls). Use parameterized queries for SQL; escape/encode output for HTML."
+    - path: "*.py"
+      guideline: "Ensure all public functions have docstrings describing purpose, parameters, and return values."
+    # ---------- TypeScript / React ----------
+    - path: "*.ts,*.tsx"
+      guideline: "Run ESLint with the TypeScript config (`@typescript-eslint/*`); use `--max-warnings=0` and reject if any remain."
+    - path: "*.ts,*.tsx"
+      guideline: "No `any` in exported/public types. Prefer explicit return types for public functions."
+    - path: "*.ts,*.tsx"
+      guideline: "Organize and de-duplicate imports; unused imports are not allowed."
+    # ---------- Repository hygiene ----------
+    - path: "src/**"
+      guideline: "Do not leave commented-out code; delete it or add a clear TODO with an issue reference."
+    - path: "*"
+      guideline: "Correct grammar and spelling in user-facing text and docs. Do not police variable naming style beyond project conventions."
+    - path: "*"
+      guideline: "Remove trailing whitespace; ensure exactly one trailing newline per file."
+    # ---------- Docs & scripts ----------
+    - path: "*.md"
+      guideline: "Markdown must pass basic `markdownlint` rules (headings in order, no long trailing spaces)."
+    - path: "*.sh"
+      guideline: "Shell scripts must pass `shellcheck`; for non-trivial scripts use `set -euo pipefail`."
+    # ---------- Configs ----------
+    - path: "*.json,*.yml,*.yaml"
+      guideline: "Files must be valid and consistently formatted; no stray keys or invalid schema if one is defined."
