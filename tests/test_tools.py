@@ -8,6 +8,7 @@ import base64
 import json
 import os
 import subprocess
+import sys
 import tempfile
 from collections.abc import Generator
 from pathlib import Path
@@ -314,7 +315,7 @@ class TestIntegrationWithMCPServer:
         env["PYTHONPATH"] = "src"
 
         with subprocess.Popen(
-            [".venv/bin/python", "-m", "mcp_base64.server"],
+            [sys.executable, "-m", "mcp_base64.server"],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -353,7 +354,7 @@ class TestIntegrationWithMCPServer:
         env["PYTHONPATH"] = "src"
 
         with subprocess.Popen(
-            [".venv/bin/python", "-m", "mcp_base64.server"],
+            [sys.executable, "-m", "mcp_base64.server"],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,

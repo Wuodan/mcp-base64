@@ -17,27 +17,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78  # v7.6.0
-
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Sync deps
-        run: uv sync --all-extras --dev
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt -e .
 
       - name: Run linters
         run: scripts/lint.sh
 
       - name: Run unit tests
-        run: uv run pytest -q
+        run: pytest -q
 
       - name: Integration test
         run: |
           cat <<'EOF' \
-          | timeout 15s uv run python -m mcp_base64.server \
+          | timeout 15s python -m mcp_base64.server \
           | grep -q 'jsonrpc'
           {
             "jsonrpc": "2.0",

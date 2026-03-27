@@ -63,7 +63,7 @@ Decodes base64 string to file.
 Install development dependencies:
 
 ```bash
-./.venv/bin/python -m pip install -e .[dev]
+./.venv/bin/python -m pip install -r requirements-dev.txt -e .
 ```
 
 Run tests:

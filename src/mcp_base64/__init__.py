@@ -1,1 +1,6 @@
-# MCP Base64 Server Package
+"""MCP Base64 package."""
+
+try:
+    from ._version import __version__
+except ImportError:
+    __version__ = "0.0.0+unknown"
