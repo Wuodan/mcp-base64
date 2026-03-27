@@ -16,6 +16,8 @@ import pytest
 from fastmcp.exceptions import ToolError
 
 from mcp_base64.server import (
+    _decode_base64_to_file_impl,
+    _encode_file_to_base64_impl,
     read_file_binary,
     validate_absolute_path,
     write_file_binary,
@@ -145,8 +147,6 @@ class TestEncodeFileToBase64:
 
     def test_encode_text_file(self, temp_text_file: Path, sample_text_content: str):
         """Test encoding a text file."""
-        from mcp_base64.server import _encode_file_to_base64_impl
-
         result = _encode_file_to_base64_impl(str(temp_text_file))
 
         # Verify the result is valid base64
@@ -157,8 +157,6 @@ class TestEncodeFileToBase64:
         self, temp_binary_file: Path, sample_binary_content: bytes
     ):
         """Test encoding a binary file."""
-        from mcp_base64.server import _encode_file_to_base64_impl
-
         result = _encode_file_to_base64_impl(str(temp_binary_file))
 
         # Verify the result is valid base64
@@ -167,22 +165,16 @@ class TestEncodeFileToBase64:
 
     def test_encode_nonexistent_file(self):
         """Test encoding non-existent file."""
-        from mcp_base64.server import _encode_file_to_base64_impl
-
         with pytest.raises(ToolError, match="File not found"):
             _encode_file_to_base64_impl("/non/existent/file.txt")
 
     def test_encode_relative_path(self):
         """Test that relative paths are rejected."""
-        from mcp_base64.server import _encode_file_to_base64_impl
-
         with pytest.raises(ToolError, match="Path must be absolute"):
             _encode_file_to_base64_impl("relative/path/file.txt")
 
     def test_encode_directory(self, temp_dir: Path):
         """Test that directories are rejected."""
-        from mcp_base64.server import _encode_file_to_base64_impl
-
         with pytest.raises(ToolError, match="Path is a directory"):
             _encode_file_to_base64_impl(str(temp_dir))
 
@@ -194,8 +186,6 @@ class TestDecodeBase64ToFile:
         self, temp_dir: Path, sample_text_content: str
     ):
         """Test decoding valid base64 text content."""
-        from mcp_base64.server import _decode_base64_to_file_impl
-
         # Encode content to base64
         b64_content = base64.b64encode(
             sample_text_content.encode("utf-8")
@@ -217,8 +207,6 @@ class TestDecodeBase64ToFile:
         self, temp_dir: Path, sample_binary_content: bytes
     ):
         """Test decoding valid base64 binary content."""
-        from mcp_base64.server import _decode_base64_to_file_impl
-
         # Encode content to base64
         b64_content = base64.b64encode(sample_binary_content).decode("ascii")
 
@@ -236,24 +224,18 @@ class TestDecodeBase64ToFile:
 
     def test_decode_invalid_base64(self, temp_dir: Path):
         """Test decoding invalid base64 content."""
-        from mcp_base64.server import _decode_base64_to_file_impl
-
         output_file = temp_dir / "decoded.txt"
         with pytest.raises(ToolError, match="Invalid base64 content"):
             _decode_base64_to_file_impl("invalid_base64_content!@#", str(output_file))
 
     def test_decode_empty_base64(self, temp_dir: Path):
         """Test decoding empty base64 content."""
-        from mcp_base64.server import _decode_base64_to_file_impl
-
         output_file = temp_dir / "decoded.txt"
         with pytest.raises(ToolError, match="Base64 content cannot be empty"):
             _decode_base64_to_file_impl("", str(output_file))
 
     def test_decode_relative_path(self, sample_text_content: str):
         """Test that relative paths are rejected for output file."""
-        from mcp_base64.server import _decode_base64_to_file_impl
-
         b64_content = base64.b64encode(sample_text_content.encode("utf-8")).decode("ascii")
 
         with pytest.raises(ToolError, match="Path must be absolute"):
@@ -261,8 +243,6 @@ class TestDecodeBase64ToFile:
 
     def test_decode_creates_parent_dirs(self, sample_text_content: str):
         """Test that parent directories are created if they don't exist."""
-        from mcp_base64.server import _decode_base64_to_file_impl
-
         # Create a path with non-existent parent directories
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = Path(temp_dir)
@@ -281,11 +261,6 @@ class TestRoundTripEncoding:
 
     def test_text_round_trip(self, temp_dir: Path, sample_text_content: str):
         """Test that text content survives encode->decode round trip."""
-        from mcp_base64.server import (
-            _decode_base64_to_file_impl,
-            _encode_file_to_base64_impl,
-        )
-
         # Create temporary file with text content
         input_file = temp_dir / "input.txt"
         input_file.write_text(sample_text_content)
@@ -302,11 +277,6 @@ class TestRoundTripEncoding:
 
     def test_binary_round_trip(self, temp_dir: Path, sample_binary_content: bytes):
         """Test that binary content survives encode->decode round trip."""
-        from mcp_base64.server import (
-            _decode_base64_to_file_impl,
-            _encode_file_to_base64_impl,
-        )
-
         # Create temporary file with binary content
         input_file = temp_dir / "input.bin"
         input_file.write_bytes(sample_binary_content)
@@ -352,6 +322,9 @@ class TestIntegrationWithMCPServer:
             env=env
         ) as process:
             try:
+                assert process.stdin is not None
+                assert process.stdout is not None
+
                 # Send initialize message
                 process.stdin.write(json.dumps(init_message) + "\n")
                 process.stdin.flush()
@@ -388,6 +361,9 @@ class TestIntegrationWithMCPServer:
             env=env
         ) as process:
             try:
+                assert process.stdin is not None
+                assert process.stdout is not None
+
                 # Send initialize message
                 init_message = {
                     "jsonrpc": "2.0",

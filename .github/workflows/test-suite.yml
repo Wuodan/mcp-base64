@@ -1,0 +1,55 @@
+name: Test Suite
+
+"on":
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  test-suite:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Sync deps
+        run: uv sync --all-extras --dev
+
+      - name: Run linters
+        run: scripts/lint.sh
+
+      - name: Run unit tests
+        run: uv run pytest -q
+
+      - name: Integration test
+        run: |
+          cat <<'EOF' \
+          | timeout 15s uv run python -m mcp_base64.server \
+          | grep -q 'jsonrpc'
+          {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "initialize",
+            "params": {
+              "protocolVersion": "2024-11-05",
+              "capabilities": {},
+              "clientInfo": {
+                "name": "test-client",
+                "version": "1.0.0"
+              }
+            }
+          }
+          EOF

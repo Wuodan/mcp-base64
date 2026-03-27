@@ -11,7 +11,9 @@ A Python MCP (Model Context Protocol) server for Base64 file conversion with std
 ## Usage
 
 ### IDE Configuration
+
 For IDE plugins, add this server to your MCP configuration JSON:
+
 ```json
 {
   "mcpServers": {
@@ -26,6 +28,7 @@ For IDE plugins, add this server to your MCP configuration JSON:
 ```
 
 ### Direct Execution
+
 ```bash
 git clone https://github.com/Wuodan/mcp-base64.git
 cd mcp-base64
@@ -37,6 +40,7 @@ python3 -m venv .venv
 ## Tools
 
 ### encode_file_to_base64(file_path: str) -> str
+
 Encodes a file to base64 string.
 
 **Parameters:**
@@ -45,6 +49,7 @@ Encodes a file to base64 string.
 **Returns:** Base64 encoded string
 
 ### decode_base64_to_file(base64_content: str, file_path: str) -> str
+
 Decodes base64 string to file.
 
 **Parameters:**
@@ -70,5 +75,5 @@ Run tests:
 Run linting:
 
 ```bash
-./.venv/bin/python -m ruff check .
+./scripts/lint.sh
 ```
