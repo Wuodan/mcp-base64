@@ -44,6 +44,7 @@ python3 -m venv .venv
 Encodes a file to base64 string.
 
 **Parameters:**
+
 - `file_path` (str): Absolute path to file to encode
 
 **Returns:** Base64 encoded string
@@ -53,6 +54,7 @@ Encodes a file to base64 string.
 Decodes base64 string to file.
 
 **Parameters:**
+
 - `base64_content` (str): Base64 encoded content
 - `file_path` (str): Absolute path where to save decoded file
 
