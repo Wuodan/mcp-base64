@@ -35,20 +35,33 @@ jobs:
 
       - name: Integration test
         run: |
-          cat <<'EOF' \
-          | timeout 15s python -m mcp_base64.server \
-          | grep -q 'jsonrpc'
-          {
-            "jsonrpc": "2.0",
-            "id": 1,
-            "method": "initialize",
-            "params": {
-              "protocolVersion": "2024-11-05",
-              "capabilities": {},
-              "clientInfo": {
-                "name": "test-client",
-                "version": "1.0.0"
-              }
-            }
+          python - <<'PY'
+          import json
+          import subprocess
+          import sys
+
+          init_message = {
+              "jsonrpc": "2.0",
+              "id": 1,
+              "method": "initialize",
+              "params": {
+                  "protocolVersion": "2024-11-05",
+                  "capabilities": {},
+                  "clientInfo": {"name": "test-client", "version": "1.0.0"},
+              },
           }
-          EOF
+
+          with subprocess.Popen(
+              [sys.executable, "-m", "mcp_base64.server"],
+              stdin=subprocess.PIPE,
+              stdout=subprocess.PIPE,
+              text=True,
+          ) as process:
+              assert process.stdin is not None
+              assert process.stdout is not None
+              process.stdin.write(json.dumps(init_message) + "\n")
+              process.stdin.flush()
+              response = json.loads(process.stdout.readline())
+              assert response["jsonrpc"] == "2.0"
+              assert "result" in response
+          PY
